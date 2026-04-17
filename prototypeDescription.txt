@@ -1,0 +1,39 @@
+What WHOOP gives you
+WHOOP exposes a REST API with OAuth 2.0. After the patient authorizes Ognomy, your backend can request scoped access to things like sleep (including stages), recovery (e.g. HRV, resting HR), daily strain/cycles, workouts, profile, and body measurements—depending on which scopes you request. This is pull-based sync from your servers, not a push stream from the band.
+
+Official entry point: WHOOP for Developers.
+
+How Ognomy would use it (product + clinical)
+Typical integration is adjunct context, not a replacement for diagnostic sleep testing or clinician judgment:
+
+Before or between visits
+Longitudinal sleep regularity, time in bed, perceived recovery, and activity/strain can enrich the chart with behavior and circadian patterns that questionnaires alone miss.
+
+After diagnosis / on therapy
+For some patients, trends in resting HR, HRV, or sleep staging summaries might support tracking engagement and wellness alongside standard clinical metrics (CPAP adherence from the device, symptoms, etc.)—with clear labeling that wearable data is not the same as apnea severity from a sleep study.
+
+Operational
+Optional eligibility or triage hints (e.g. “wears a tracker and consents to share”)—still subject to your clinical protocols.
+
+Technical shape of the integration
+Layer	What you’d build
+Auth
+OAuth in the Ognomy app or web: user links WHOOP → you store refresh tokens securely, rotate access tokens.
+Sync
+Scheduled jobs (and on-demand refresh) call WHOOP for sleep cycles, recovery, etc., keyed to your patient ID + linked WHOOP user.
+Storage
+Persist normalized records (sleep nights, recovery days) in your PHI environment with audit logs.
+UI
+Clinician view: simple timelines and summaries; patient view: education-focused, not over-interpreted.
+Disconnect
+User can revoke; you delete or stop ingesting per policy.
+Compliance and positioning
+Treat WHOOP data as PHI once tied to a patient; align with HIPAA (BAA coverage is a vendor/legal question for your stack and any subprocessors).
+Consent should spell out what is shared, that it’s not a medical device for OSA diagnosis in this flow, and how clinicians will use it.
+Scope minimization: only request WHOOP scopes you actually display or use clinically.
+Limits to expect
+API data is aggregated/summary for many domains; it may not match polysomnography or HSAT for events/AHI.
+WHOOP’s terms, rate limits, and available fields can change—design the integration so clinical workflows do not depend on a specific wearable field.
+Bottom line: Ognomy would integrate by OAuth-linking the patient’s WHOOP account, periodically ingesting sleep/recovery (and optionally workout) summaries into the EHR/patient chart, and presenting them as context for visits and longitudinal care, while keeping formal diagnosis and therapy decisions on clinical tests and clinician assessment.
+
+
